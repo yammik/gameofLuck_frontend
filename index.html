@@ -3,23 +3,11 @@
   <head>
     <meta charset="utf-8">
     <title>Street View Containers</title>
-    <style>
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #street-view {
-        height: 90%;
-        width: 80%;
-      }
-    </style>
+    <link rel="stylesheet" href="index.css">
     <script async defer
          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_yMFLGXez8NFy6V2LUVe3Fk3lldgvkHI&callback=initialize">
     </script>
-    <script type="text/javascript" src="index.js">
-
-    </script>
+    <script type="text/javascript" src="./src/index.js"></script>
   </head>
   <body>
     <form id="player-name-form" action="index.html" method="post">
@@ -30,20 +18,26 @@
 
         </div>
     </form>
-    <div id="street-view"></div>
     <div id="user-info">
       HIIII
     </div>
+    <div id="street-view"></div>
+
     <script>
-      var panorama;
+      let panorama;
       function initialize() {
         panorama = new google.maps.StreetViewPanorama(
             document.getElementById('street-view'),
             {
-              position: {lat: 37.869260, lng: -122.254811},
+              position: {lat: 40.8177521, lng: -73.943642},
               pov: {heading: 165, pitch: 0},
               zoom: 1
             });
+
+            // panorama.addListener('position_changed', function() {
+            //   var positionCell = document.getElementById('position-cell');
+            //   positionCell.firstChild.nodeValue = panorama.getPosition() + '';
+            // });
       }
     </script>
 
