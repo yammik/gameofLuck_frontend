@@ -3,11 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const playerNameForm = document.getElementById('player-name-form')
   const playerNameInput = document.getElementById('player-name-input')
   const userInfoPanel = document.getElementById('user-info')
+  const userStatsPanel = document.getElementById('user-stats')
 
   let numClicks = 0
 
   let clickLimit = 10 // will need to find a way to set this
   let playerNameSubmission
+
   playerNameForm.addEventListener("submit", (event) => {
     event.preventDefault()
     playerNameSubmission = playerNameInput.value
@@ -24,23 +26,36 @@ document.addEventListener("DOMContentLoaded", () => {
   // SEANSEANSEANSEANSEANSEANSEANSEANSEAN
     // randomly generate age, gender
 
+    const randPlayerAge = randomPlayerAge()
+    const randPlayerGender = randomPlayerGender()
+    const randLatitude = generateRandomLat()
+    const randLongitude = generateRandomLong()
+
+    console.log(randPlayerAge)
+    console.log(randPlayerGender);
+
     // *depending on country determination: fetch country data -> decide how many clicks allowed based on: gender and mortality and income lvl of country
     // set up a demo player with predetermined country and gender and age and try above
+    const userStatsPTag = document.createElement("p")
+    userStatsPTag.innerText = `Welcome ${playerNameSubmission}! You are a ${randPlayerGender} who is ${randPlayerAge} years old and is currently at latitude ${randLatitude} and longitude ${randLongitude}!`
 
-    // fetch("API URL FOR ALL PLAYERS", {
-    //   method: "POST",
-    //   headers: {
-    //     "Accept": "application/json",
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify({
-    //     name: playerNameSubmission,
-    //     age: ,
-    //     gender: ,
-    //     latitude: ,
-    //     longitude:
-    //   })
-    // }) // use .then to get name and display on DOM
+    userStatsPanel.appendChild(userStatsPTag)
+    fetch("http://localhost:3000/api/v1/players", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: playerNameSubmission,
+        age: randPlayerAge,
+        gender: randPlayerGender,
+        latitude: randLatitude,
+        longitude: randLongitude
+      })
+    })
+    .then(response => response.json())
+    .then( r => console.log(r))
 
   // SEANSEANSEANSEANSEANSEANSEANSEANSEAN
 
@@ -49,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
 
     event.target.reset()
-  })
+  })// end of form event listener
 
 // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
   let mouseWasDragged = false
@@ -89,7 +104,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   }
 
+
   function gameOverFn() {
+    let lastUserData
+    let allUserData
     userInfoPanel.innerHTML = ""
     const gaveOverMessage = document.createElement("p")
     gaveOverMessage.innerText = "Game Over Sucker!!"
@@ -98,8 +116,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const gameOverImg = document.createElement("img")
     gameOverImg.src = "https://www.moma.org/media/W1siZiIsIjE2NTQ1NyJdLFsicCIsImNvbnZlcnQiLCItcmVzaXplIDIwMDB4MjAwMFx1MDAzZSJdXQ.jpg?sha=33c151dba7f8de4c"
     streetViewDiv.appendChild(gameOverImg)
-    // fetch("API URL")
-  }
+
+    
+
+
+  }// end of game over fn
 
 })// end of DOMContentLoaded eventlistener
 
@@ -120,4 +141,26 @@ function generateRandomLat() {
       num = num * -1;
   }
   return num;
+}
+
+function randomPlayerAge() {
+  randNum = Math.floor(Math.random() * Math.floor(100))
+
+  if (randNum > 1) {
+    return randNum
+  }
+  else {
+    randNum
+  }
+}
+
+function randomPlayerGender() {
+  randNumber = Math.random() * Math.floor(1)
+
+  if (randNumber >= 0.5) {
+    return "male"
+  }
+  else {
+    return "female"
+  }
 }
