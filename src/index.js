@@ -13,9 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
     playerNameSubmission = playerNameInput.value
     console.log(playerNameSubmission)
 
+    LAT = 23523;
 
   // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
-    // (generateRandomLat(), generateRandomLong())
     // verify streetViewable (), determine country
     // *depending on country determination: fetch country data -> place age in age group in country's mortality distribution
   // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY

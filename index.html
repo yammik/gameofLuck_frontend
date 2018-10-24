@@ -4,42 +4,83 @@
     <meta charset="utf-8">
     <title>Street View Containers</title>
     <link rel="stylesheet" href="index.css">
-    <script async defer
-         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_yMFLGXez8NFy6V2LUVe3Fk3lldgvkHI&callback=initialize">
-    </script>
-    <script type="text/javascript" src="./src/index.js"></script>
   </head>
   <body>
-    <form id="player-name-form" action="index.html" method="post">
-        <div>
-          <label for="name">Name:</label>
-          <input type="text" id="player-name-input">
-          <input type="submit" name="player-name">
-
-        </div>
-    </form>
+    <script type="text/javascript" src="./src/index.js"></script>
+    <div>
+      <div id="enter-name">
+        Enter your name:
+      </div>
+      <form id="player-name-form" action="index.html" method="post">
+        <input type="text" id="player-name-input">
+        <input type="submit" name="player-name">
+      </form>
+    </div>
     <div id="user-info">
       HIIII
     </div>
-    <div id="street-view"></div>
+
+    <div id="street-view">
+    </div>
+
 
     <script>
+    function init() {
       let panorama;
-      function initialize() {
-        panorama = new google.maps.StreetViewPanorama(
-            document.getElementById('street-view'),
-            {
-              position: {lat: 40.8177521, lng: -73.943642},
+      let COORDS;
+
+      // LONGITUDE -180 to + 180
+      function generateRandomLong() {
+        let num = (Math.random()*180).toFixed(3);
+        let posorneg = Math.floor(Math.random());
+        if (posorneg == 0) {
+            num = num * -1;
+        }
+        return num;
+      }
+      // LATITUDE -90 to +90
+      function generateRandomLat() {
+        let num = (Math.random()*90).toFixed(3);
+        let posorneg = Math.floor(Math.random());
+        if (posorneg == 0) {
+            num = num * -1;
+        }
+        return num;
+      }
+      let attempts = 0
+      function getCoords() {
+
+        const sv = new google.maps.StreetViewService();
+        let coordinates;
+        sv.hasSV = false;
+          coordinates = {lat: generateRandomLat(), lng: generateRandomLong()};
+          sv.getPanorama({location: coordinates, radius: 50}, processSVData);
+          console.log(coordinates);
+      }
+
+
+      function processSVData(data, status) {
+        if (status === 'OK') {
+          console.log(data);
+          console.log("worked");
+          COORDS = data.l[Object.keys(data.l)[Object.keys(data.l).length - 1]];
+          (function initialize() {
+            panorama = new google.maps.StreetViewPanorama(document.getElementById('street-view'), {
+              position: COORDS,
               pov: {heading: 165, pitch: 0},
               zoom: 1
             });
-
-            // panorama.addListener('position_changed', function() {
-            //   var positionCell = document.getElementById('position-cell');
-            //   positionCell.firstChild.nodeValue = panorama.getPosition() + '';
-            // });
+          })()
+        } else {
+          console.error('Street View data not found for this location.');
+          getCoords();
+        }
       }
+      getCoords();
+    }
     </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_yMFLGXez8NFy6V2LUVe3Fk3lldgvkHI&callback=init"></script>
 
   </body>
 </html>

@@ -3,11 +3,11 @@ W1024
 #Frontend
 - Streetview DOM should not appear until player enters name (= a game is created essentially)
 - Set click numbers
-- Verify and identify location
++ Verify and identify location
 
 #May
 - UI design (May CSS)
-- street view verify coordinates
++ street view verify coordinates
 - double check click logic
 
 #Sean
@@ -22,3 +22,7 @@ W1024
 
 #Backend
 1. May - Mortality distribution for females
+
+
+#possible features
+- randomly generated starbucks in high income countries for bonus steps
