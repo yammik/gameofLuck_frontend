@@ -1,13 +1,64 @@
+function init() {
+  let panorama;
+  let COORDS;
+  let LAND;
+
+  function generateRandomLong(lonMin, lonMax) {
+    return (Math.random()*(lonMax-lonMin)) + lonMin;
+  }
+  function generateRandomLat(latMin, latMax) {
+    return (Math.random()*(latMax-latMin)) + latMin;
+  }
+
+
+  function getCoords(country) {
+    const sv = new google.maps.StreetViewService();
+    // debugger
+    sv.hasSV = false;
+    let coordinates = {lat: generateRandomLat(country.bounds["lat-min"], country.bounds["lat-max"]), lng: generateRandomLong(country.bounds["lon-min"], country.bounds["lon-max"])};
+    sv.getPanorama({location: coordinates, radius: 60}, processSVData);
+    console.log(coordinates);
+  }
+
+  function processSVData(data, status) {
+    if (status === "OK") {
+      console.log(data);
+      console.log("worked");
+      COORDS = data.l[Object.keys(data.l)[Object.keys(data.l).length - 1]];
+      // (function initialize() {
+        panorama = new google.maps.StreetViewPanorama(document.getElementById("street-view"), {
+          position: COORDS,
+          pov: {heading: 165, pitch: 0},
+          zoom: 1
+        });
+      // })()
+      // debugger
+    } else {
+      console.error("Street View data not found for this location.");
+      getCoords(LAND.attributes);
+    }
+  }
+
+  fetch("http://localhost:3000/api/v1/countries")
+  .then(resp => resp.json())
+  .then(json => {
+    // debugger
+    LAND = json.data[Math.floor(Math.random() * json.data.length)];
+    console.log(LAND.attributes.name);
+    getCoords(LAND.attributes);
+  })
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  const streetViewDiv = document.getElementById('street-view')
-  const playerNameForm = document.getElementById('player-name-form')
-  const playerNameInput = document.getElementById('player-name-input')
-  const userInfoPanel = document.getElementById('user-info')
-  const userStatsPanel = document.getElementById('user-stats')
+  const streetViewDiv = document.getElementById("street-view")
+  const playerNameForm = document.getElementById("player-name-form")
+  const playerNameInput = document.getElementById("player-name-input")
+  const userInfoPanel = document.getElementById("user-info")
+  const userStatsPanel = document.getElementById("user-stats")
 
   let numClicks = 0
 
-  let clickLimit = 2 // will need to find a way to set this
+  let clickLimit = 20 // will need to find a way to set this
   let playerNameSubmission
 
   let currentPlayer
@@ -20,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
     // verify streetViewable (), determine country
-    // *depending on country determination: fetch country data -> place age in age group in country's mortality distribution
+    // *depending on country determination: fetch country data -> place age in age group in country"s mortality distribution
   // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
 
   // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
@@ -50,8 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function createNewPlayer(playerNameSubmission){
     const randPlayerAge = randomPlayerAge()
     const randPlayerGender = randomPlayerGender()
-    const randLatitude = generateRandomLat()
-    const randLongitude = generateRandomLong()
     const userStatsPTag = document.createElement("p")
 
     userStatsPTag.innerText = `Welcome ${playerNameSubmission}! You are a ${randPlayerGender} who is ${randPlayerAge} years old and is currently at latitude ${randLatitude} and longitude ${randLongitude}!`
@@ -128,25 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }// end of game over fn
 
 })// end of DOMContentLoaded eventlistener
-
-// LONGITUDE -180 to + 180
-function generateRandomLong() {
-  let num = (Math.random()*180).toFixed(3);
-  let posorneg = Math.floor(Math.random());
-  if (posorneg == 0) {
-      num = num * -1;
-  }
-  return num;
-}
-// LATITUDE -90 to +90
-function generateRandomLat() {
-  let num = (Math.random()*90).toFixed(3);
-  let posorneg = Math.floor(Math.random());
-  if (posorneg == 0) {
-      num = num * -1;
-  }
-  return num;
-}
 
 function randomPlayerAge() {
   randNum = Math.floor(Math.random() * Math.floor(100))
