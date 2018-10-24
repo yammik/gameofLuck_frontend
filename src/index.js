@@ -7,57 +7,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let numClicks = 0
 
-  let clickLimit = 10 // will need to find a way to set this
+  let clickLimit = 2 // will need to find a way to set this
   let playerNameSubmission
+
+  let currentPlayer
 
   playerNameForm.addEventListener("submit", (event) => {
     event.preventDefault()
     playerNameSubmission = playerNameInput.value
-    console.log(playerNameSubmission)
 
+    createNewPlayer(playerNameSubmission)
 
   // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
     // (generateRandomLat(), generateRandomLong())
     // verify streetViewable (), determine country
     // *depending on country determination: fetch country data -> place age in age group in country's mortality distribution
   // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
-
-
-  // SEANSEANSEANSEANSEANSEANSEANSEANSEAN
-    // randomly generate age, gender
-
-    const randPlayerAge = randomPlayerAge()
-    const randPlayerGender = randomPlayerGender()
-    const randLatitude = generateRandomLat()
-    const randLongitude = generateRandomLong()
-
-    console.log(randPlayerAge)
-    console.log(randPlayerGender);
-
-    // *depending on country determination: fetch country data -> decide how many clicks allowed based on: gender and mortality and income lvl of country
-    // set up a demo player with predetermined country and gender and age and try above
-    const userStatsPTag = document.createElement("p")
-    userStatsPTag.innerText = `Welcome ${playerNameSubmission}! You are a ${randPlayerGender} who is ${randPlayerAge} years old and is currently at latitude ${randLatitude} and longitude ${randLongitude}!`
-
-    userStatsPanel.appendChild(userStatsPTag)
-    fetch("http://localhost:3000/api/v1/players", {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: playerNameSubmission,
-        age: randPlayerAge,
-        gender: randPlayerGender,
-        latitude: randLatitude,
-        longitude: randLongitude
-      })
-    })
-    .then(response => response.json())
-    .then( r => console.log(r))
-
-  // SEANSEANSEANSEANSEANSEANSEANSEANSEAN
 
   // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
       // use .then to change display streetview to show
@@ -83,6 +48,36 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
 
+  function createNewPlayer(playerNameSubmission){
+    const randPlayerAge = randomPlayerAge()
+    const randPlayerGender = randomPlayerGender()
+    const randLatitude = generateRandomLat()
+    const randLongitude = generateRandomLong()
+    const userStatsPTag = document.createElement("p")
+
+    userStatsPTag.innerText = `Welcome ${playerNameSubmission}! You are a ${randPlayerGender} who is ${randPlayerAge} years old and is currently at latitude ${randLatitude} and longitude ${randLongitude}!`
+
+    userStatsPanel.appendChild(userStatsPTag)
+    fetch("http://localhost:3000/api/v1/players", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: playerNameSubmission,
+        age: randPlayerAge,
+        gender: randPlayerGender,
+        latitude: randLatitude,
+        longitude: randLongitude
+      })
+    })
+    .then(response => response.json())
+    .then( (currentPlayerRes) => {
+      currentPlayer = currentPlayerRes["data"]
+    })
+  }// end of create new player function
+
   function movementLogic() {
     if(numClicks < clickLimit){
       clicksUnderLimitFn()
@@ -92,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // break the game
     }
-  }
+  }// end of movement logic
 
   function clicksUnderLimitFn(){
     numClicks++
@@ -117,8 +112,19 @@ document.addEventListener("DOMContentLoaded", () => {
     gameOverImg.src = "https://www.moma.org/media/W1siZiIsIjE2NTQ1NyJdLFsicCIsImNvbnZlcnQiLCItcmVzaXplIDIwMDB4MjAwMFx1MDAzZSJdXQ.jpg?sha=33c151dba7f8de4c"
     streetViewDiv.appendChild(gameOverImg)
 
-    
-
+    const currentPlayerId = currentPlayer.id
+    console.log(currentPlayer);
+    console.log(currentPlayerId);
+    fetch(`http://localhost:3000/api/v1/players/${currentPlayerId}`, {
+      method: "PATCH",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        alive: false
+      })
+    })
 
   }// end of game over fn
 
