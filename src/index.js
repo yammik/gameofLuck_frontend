@@ -13,6 +13,20 @@ document.addEventListener("DOMContentLoaded", () => {
     playerNameSubmission = playerNameInput.value
     console.log(playerNameSubmission)
 
+
+  // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
+    // (generateRandomLat(), generateRandomLong())
+    // verify streetViewable (), determine country
+    // *depending on country determination: fetch country data -> place age in age group in country's mortality distribution
+  // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
+
+
+  // SEANSEANSEANSEANSEANSEANSEANSEANSEAN
+    // randomly generate age, gender
+
+    // *depending on country determination: fetch country data -> decide how many clicks allowed based on: gender and mortality and income lvl of country
+    // set up a demo player with predetermined country and gender and age and try above
+
     // fetch("API URL FOR ALL PLAYERS", {
     //   method: "POST",
     //   headers: {
@@ -20,15 +34,25 @@ document.addEventListener("DOMContentLoaded", () => {
     //     "Content-Type": "application/json"
     //   },
     //   body: JSON.stringify({
-    //     playerName: playerNameSubmission
+    //     name: playerNameSubmission,
+    //     age: ,
+    //     gender: ,
+    //     latitude: ,
+    //     longitude:
     //   })
-    // })
-    event.target.reset()
+    // }) // use .then to get name and display on DOM
 
+  // SEANSEANSEANSEANSEANSEANSEANSEANSEAN
+
+  // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
+      // use .then to change display streetview to show
+  // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
+
+    event.target.reset()
   })
 
+// MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
   let mouseWasDragged = false
-
   streetViewDiv.addEventListener("mousedown", (event) => {
     mouseWasDragged = false
   })
@@ -42,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
       movementLogic()
     }
   })
+// MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
 
   function movementLogic() {
     if(numClicks < clickLimit){
@@ -86,7 +111,6 @@ function generateRandomLong() {
       num = num * -1;
   }
   return num;
-  console.log(num)
 }
 // LATITUDE -90 to +90
 function generateRandomLat() {
@@ -96,5 +120,4 @@ function generateRandomLat() {
       num = num * -1;
   }
   return num;
-  console.log(num)
 }
