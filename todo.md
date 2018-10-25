@@ -30,3 +30,9 @@ W1024
 
 #possible features
 - randomly generated starbucks in high income countries for bonus steps
+
+
+
+#URL to fetch every time user clicks:
+- make sure to set goal upon init
+- `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${GOAL}&inputtype=textquery&fields=formatted_address,name&locationbias=circle:50@${CURRENTPOS.lat},${CURRENTPOS.lng}&key=AIzaSyB_yMFLGXez8NFy6V2LUVe3Fk3lldgvkHI`
