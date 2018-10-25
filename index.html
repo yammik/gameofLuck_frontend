@@ -5,32 +5,38 @@
     <title>Street View Containers</title>
     <link rel="stylesheet" href="index.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet">
-    <link href="//cdn.muicss.com/mui-0.9.41/css/mui.min.css" rel="stylesheet" type="text/css" />
-    <script src="//cdn.muicss.com/mui-0.9.41/js/mui.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Crimson+Text" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
   </head>
   <body>
     <script type="text/javascript" src="./src/index.js"></script>
     <div class="container">
-      <h2 id="title">wanderlost</h2>
+      <h2 id="title" class="text-glow-white">wanderlost</h2>
     </div>
 
     <div id="temp">
       <div class="container">
-        <h4 id="name-prompt" style="display: none;">what's your name?</h4>
+        <h4 id="name-prompt" class="text-glow-white" style="display: none;">what's your name?</h4>
       </div>
-      <form id="player-name-form" action="index.html" method="post" style="display: none;" class="mui-form">
+      <form id="player-name-form" action="index.html" method="post" style="display: none;">
         <input type="text" id="player-name-input"><br>
-        <input type="submit" name="player-name" value="✈️" class="mui-btn mui-btn--flat mui-btn--primary" style="height: 4em; width: 4em; margin: 10px;">
+        <input type="submit" name="player-name" value="✈️">
       </form>
     </div>
 
-    <div id="concealer" style="z-index: 99;background: white;height:  100%;width:  100%;position:  absolute;top: 179px;">
-
+    <div id="concealer" style="z-index:99;background:white;height:100%;width:100%;position:absolute;top:179px;">
+      <div id="loading" class="typewrite" data-type='[ "... planting forests ...", "... building civilizations ...", "... hatching humans ...", "... painting clouds ...", "... salting the oceans ...", "... trekking the Bering Strait ...", "... overthrowing governments...", "... beheading monarchs ...", "... i am so sorry loading is taking so long ..." ]'>
+        <span class="wrap"></span>
+      </div>
+      <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     </div>
     <div id="map-canvas" style="height:-webkit-fill-available">
       <div id="left-panel">
-
+        <ul>
+          <li></li>
+          <li id="steps-taken"></li>
+          <li id="moves-left"></li>
+        </ul>
       </div>
       <div id="right-panel">
 
@@ -38,6 +44,8 @@
       <div id="street-view" style="top: 180px;">
       </div>
     </div>
+
+
 
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_yMFLGXez8NFy6V2LUVe3Fk3lldgvkHI&callback=init"></script>
   </body>

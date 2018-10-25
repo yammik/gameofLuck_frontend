@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Street View Containers</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #street-view {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript" src="./src/index.js"></script>
+
+    <div id="street-view"></div>
+    <script>
+      function getUrlVars() {
+        const vars = {};
+        const parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+          vars[key] = value;
+        });
+        return vars;
+      }
+      console.log(getUrlVars());
+
+      var panorama;
+
+      function initialize() {
+        const coordinates = getUrlVars();
+        panorama = new google.maps.StreetViewPanorama(document.getElementById("street-view"), {
+          position: {lat: parseFloat(coordinates.lat), lng: parseFloat(coordinates.lng)},
+          pov: {heading: 90, pitch: 0},
+          zoom: 1,
+          visible: true
+        });
+        panorama.addListener('position_changed', function() {
+          console.log(NUMCLICKS);
+          NUMCLICKS += 1;
+          if (NUMCLICKS > 0) {
+            CURRENTPOS = panorama.getPosition() + '';
+            console.log(CURRENTPOS); // use the new coordinate to search for safe zone nearby
+            clicksUnderLimitFn();
+          }
+          movementLogic();
+        });
+
+        // function movementLogic() {
+        //   if(NUMCLICKS < CLICKLIMIT){
+        //     clicksUnderLimitFn()
+        //   }
+        //   else {
+        //     gameOverFn()
+        //     // break the game
+        //   }
+        // }// end of movement logic
+        //
+        // function clicksUnderLimitFn(){
+        //   document.getElementById('steps-taken').innerText = `steps taken: ${NUMCLICKS}`;
+        //   document.getElementById('moves-left').innerText = `moves left: ${CLICKLIMIT-NUMCLICKS}`;
+        // }
+        //
+        // function gameOverFn() {
+        //   let lastUserData
+        //   let allUserData
+        //   document.getElementById('left-panel').innerHTML = ""
+        //   const gaveOverMessage = document.createElement("p")
+        //   gaveOverMessage.innerText = "Game Over Sucker!!"
+        //   document.getElementById('map-canvas').appendChild(gaveOverMessage)
+        //   document.getElementById("street-view").innerHTML = ""
+        //   const gameOverImg = document.createElement("img")
+        //   gameOverImg.src = "https://www.moma.org/media/W1siZiIsIjE2NTQ1NyJdLFsicCIsImNvbnZlcnQiLCItcmVzaXplIDIwMDB4MjAwMFx1MDAzZSJdXQ.jpg?sha=33c151dba7f8de4c"
+        //   document.getElementById("street-view").appendChild(gameOverImg)
+        //
+        //   const currentPlayerId = currentPlayer.id
+        //   console.log(currentPlayer);
+        //   console.log(currentPlayerId);
+        //   fetch(`http://localhost:3000/api/v1/players/${currentPlayerId}`, {
+        //     method: "PATCH",
+        //     headers: {
+        //       "Accept": "application/json",
+        //       "Content-Type": "application/json"
+        //     },
+        //     body: JSON.stringify({
+        //       alive: false
+        //     })
+        //   })
+        // }// end of game over fn
+      }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_yMFLGXez8NFy6V2LUVe3Fk3lldgvkHI&callback=initialize">
+    </script>
+  </body>
+</html>
