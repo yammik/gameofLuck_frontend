@@ -1,5 +1,9 @@
 let COORDS;
 let LAND;
+let NUMCLICKS = -1;
+let CURRENTPOS;
+let CLICKLIMIT = 5;
+
 function init() {
   let attempts = 0;
   let panorama;
@@ -26,8 +30,66 @@ function init() {
       panorama = new google.maps.StreetViewPanorama(document.getElementById("street-view"), {
         position: COORDS,
         pov: {heading: 90, pitch: 0},
-        zoom: 1
+        zoom: 1,
+        visible: true
       });
+
+      function movementLogic() {
+        if(NUMCLICKS < CLICKLIMIT){
+          clicksUnderLimitFn()
+        }
+        else {
+          gameOverFn()
+          // break the game
+        }
+      }// end of movement logic
+
+      function clicksUnderLimitFn(){
+        document.getElementById('steps-taken').innerText = `steps taken: ${NUMCLICKS}`;
+        document.getElementById('moves-left').innerText = `moves left: ${CLICKLIMIT-NUMCLICKS}`;
+      }
+
+      function gameOverFn() {
+        let lastUserData
+        let allUserData
+        document.getElementById('left-panel').innerHTML = ""
+        const gaveOverMessage = document.createElement("p")
+        gaveOverMessage.innerText = "Game Over Sucker!!"
+        document.getElementById('map-canvas').appendChild(gaveOverMessage)
+        streetViewDiv.innerHTML = ""
+        const gameOverImg = document.createElement("img")
+        gameOverImg.src = "https://www.moma.org/media/W1siZiIsIjE2NTQ1NyJdLFsicCIsImNvbnZlcnQiLCItcmVzaXplIDIwMDB4MjAwMFx1MDAzZSJdXQ.jpg?sha=33c151dba7f8de4c"
+        streetViewDiv.appendChild(gameOverImg)
+
+        const currentPlayerId = currentPlayer.id
+        console.log(currentPlayer);
+        console.log(currentPlayerId);
+        fetch(`http://localhost:3000/api/v1/players/${currentPlayerId}`, {
+          method: "PATCH",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            alive: false
+          })
+        })
+
+      }// end of game over fn
+
+      panorama.addListener('position_changed', function() {
+        console.log(NUMCLICKS);
+        NUMCLICKS += 1;
+        if (NUMCLICKS > 0) {
+          CURRENTPOS = panorama.getPosition() + '';
+          console.log(CURRENTPOS); // use the new coordinate to search for safe zone nearby
+          clicksUnderLimitFn();
+        }
+        movementLogic();
+      });
+
+
+
       $('#name-prompt').fadeIn('slow');
       $('#player-name-form').fadeIn('slow');
     } else {
@@ -55,16 +117,15 @@ function init() {
   getCountry();
 }
 
+
 document.addEventListener("DOMContentLoaded", () => {
+  // init();
   const streetViewDiv = document.getElementById("street-view")
   const playerNameForm = document.getElementById("player-name-form")
   const playerNameInput = document.getElementById("player-name-input")
   const userInfoPanel = document.getElementById("left-panel")
   const userStatsPanel = document.getElementById("user-stats")
 
-  let numClicks = 0
-
-  let clickLimit = 20 // will need to find a way to set this
   let playerNameSubmission
 
   let currentPlayer
@@ -72,32 +133,30 @@ document.addEventListener("DOMContentLoaded", () => {
   playerNameForm.addEventListener("submit", event => {
     event.preventDefault();
     playerNameSubmission = playerNameInput.value;
-    // document.getElementById('street-view').style = "";
     $('#concealer').fadeOut('slow');
     createNewPlayer(playerNameSubmission);
     $('#temp').fadeOut('slow');
 
-      userInfoPanel.innerHTML = `<ul><li>name: ${playerNameSubmission}</li><li>steps taken: ${numClicks}</li><li>moves left: ${clickLimit-numClicks}</li></ul>`;
+    userInfoPanel.innerHTML = `<ul><li>name: ${playerNameSubmission}</li><li id="steps-taken">steps taken: ${NUMCLICKS}</li><li id="moves-left">moves left: ${CLICKLIMIT-NUMCLICKS}</li></ul>`;
   })// end of form event listener
 
 
 
-// MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
-  let mouseWasDragged = false
+  // let mouseWasDragged = false
   streetViewDiv.addEventListener("mousedown", (event) => {
-    mouseWasDragged = false
+    let mouseWasDragged = false
+    event.target.addEventListener("mousemove", (event) => {
+      mouseWasDragged = true
+      console.log(mouseWasDragged);
+    })
+    event.target.addEventListener("mouseup", (event) => {
+      if (!mouseWasDragged) {
+        movementLogic()
+      }
+    })
   })
 
-  streetViewDiv.addEventListener("mousemove", (event) => {
-    mouseWasDragged = true
-  })
 
-  streetViewDiv.addEventListener("mouseup", (event) => {
-    if (!mouseWasDragged) {
-      movementLogic()
-    }
-  })
-// MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
 
   function createNewPlayer(playerNameSubmission){
     const randPlayerAge = randomPlayerAge()
@@ -124,55 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   }// end of create new player function
 
-  function movementLogic() {
-    if(numClicks < clickLimit){
-      clicksUnderLimitFn()
-    }
-    else {
-      gameOverFn()
 
-      // break the game
-    }
-  }// end of movement logic
-
-  function clicksUnderLimitFn(){
-    numClicks++
-    userInfoPanel.innerHTML = `<ul><li>name: ${playerNameSubmission}</li><li>steps taken: ${numClicks}</li><li>moves left: ${clickLimit-numClicks}</li></ul>`;
-
-    // userInfoPanel.innerHTML = ""
-    // const userInfoPTag = document.createElement("p")
-    // userInfoPTag.innerText = `name: ${playerNameSubmission}: ${numClicks} times and have ${clickLimit-numClicks} moves left!`
-    // userInfoPanel.appendChild(userInfoPTag)
-
-  }
-
-  function gameOverFn() {
-    let lastUserData
-    let allUserData
-    userInfoPanel.innerHTML = ""
-    const gaveOverMessage = document.createElement("p")
-    gaveOverMessage.innerText = "Game Over Sucker!!"
-    userInfoPanel.appendChild(gaveOverMessage)
-    streetViewDiv.innerHTML = ""
-    const gameOverImg = document.createElement("img")
-    gameOverImg.src = "https://www.moma.org/media/W1siZiIsIjE2NTQ1NyJdLFsicCIsImNvbnZlcnQiLCItcmVzaXplIDIwMDB4MjAwMFx1MDAzZSJdXQ.jpg?sha=33c151dba7f8de4c"
-    streetViewDiv.appendChild(gameOverImg)
-
-    const currentPlayerId = currentPlayer.id
-    console.log(currentPlayer);
-    console.log(currentPlayerId);
-    fetch(`http://localhost:3000/api/v1/players/${currentPlayerId}`, {
-      method: "PATCH",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        alive: false
-      })
-    })
-
-  }// end of game over fn
 
 })// end of DOMContentLoaded eventlistener
 
