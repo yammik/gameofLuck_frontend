@@ -4,26 +4,40 @@
     <meta charset="utf-8">
     <title>Street View Containers</title>
     <link rel="stylesheet" href="index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet">
+    <link href="//cdn.muicss.com/mui-0.9.41/css/mui.min.css" rel="stylesheet" type="text/css" />
+    <script src="//cdn.muicss.com/mui-0.9.41/js/mui.min.js"></script>
   </head>
   <body>
     <script type="text/javascript" src="./src/index.js"></script>
-    <div>
-      <div id="enter-name">
-        Enter your name:
+    <div class="container">
+      <h2 id="title">wanderlost</h2>
+    </div>
+
+    <div id="temp">
+      <div class="container">
+        <h4 id="name-prompt" style="display: none;">what's your name?</h4>
       </div>
-      <form id="player-name-form" action="index.html" method="post">
-        <input type="text" id="player-name-input">
-        <input type="submit" name="player-name">
+      <form id="player-name-form" action="index.html" method="post" style="display: none;" class="mui-form">
+        <input type="text" id="player-name-input"><br>
+        <input type="submit" name="player-name" value="✈️" class="mui-btn mui-btn--flat mui-btn--primary" style="height: 4em; width: 4em; margin: 10px;">
       </form>
     </div>
-    <div id="user-info">
-      HIIII
+
+    <div id="concealer" style="z-index: 99;background: white;height:  100%;width:  100%;position:  absolute;top: 179px;">
+
     </div>
+    <div id="map-canvas" style="height:-webkit-fill-available">
+      <div id="left-panel">
 
-    <div id="street-view">
+      </div>
+      <div id="right-panel">
+
+      </div>
+      <div id="street-view" style="top: 180px;">
+      </div>
     </div>
-
-
 
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_yMFLGXez8NFy6V2LUVe3Fk3lldgvkHI&callback=init"></script>
   </body>

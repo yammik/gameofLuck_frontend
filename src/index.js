@@ -1,7 +1,8 @@
+let COORDS;
+let LAND;
 function init() {
+  let attempts = 0;
   let panorama;
-  let COORDS;
-  let LAND;
 
   function generateRandomLong(lonMin, lonMax) {
     return (Math.random()*(lonMax-lonMin)) + lonMin;
@@ -13,47 +14,52 @@ function init() {
 
   function getCoords(country) {
     const sv = new google.maps.StreetViewService();
-    // debugger
-    sv.hasSV = false;
     let coordinates = {lat: generateRandomLat(country.bounds["lat-min"], country.bounds["lat-max"]), lng: generateRandomLong(country.bounds["lon-min"], country.bounds["lon-max"])};
-    sv.getPanorama({location: coordinates, radius: 60}, processSVData);
-    console.log(coordinates);
+    sv.getPanorama({location: coordinates, radius: 50}, processSVData);
   }
 
   function processSVData(data, status) {
     if (status === "OK") {
-      console.log(data);
-      console.log("worked");
+      console.log("ready");
+      attempts = 0;
       COORDS = data.l[Object.keys(data.l)[Object.keys(data.l).length - 1]];
-      // (function initialize() {
-        panorama = new google.maps.StreetViewPanorama(document.getElementById("street-view"), {
-          position: COORDS,
-          pov: {heading: 165, pitch: 0},
-          zoom: 1
-        });
-      // })()
-      // debugger
+      panorama = new google.maps.StreetViewPanorama(document.getElementById("street-view"), {
+        position: COORDS,
+        pov: {heading: 90, pitch: 0},
+        zoom: 1
+      });
+      $('#name-prompt').fadeIn('slow');
+      $('#player-name-form').fadeIn('slow');
     } else {
-      console.error("Street View data not found for this location.");
-      getCoords(LAND.attributes);
+      if (attempts > 15) {
+        getCountry();
+      } else {
+        console.error("Street View data not found for this location.");
+        attempts++;
+        console.log(attempts);
+        getCoords(LAND.attributes);
+      }
     }
   }
 
-  fetch("http://localhost:3000/api/v1/countries")
-  .then(resp => resp.json())
-  .then(json => {
-    // debugger
-    LAND = json.data[Math.floor(Math.random() * json.data.length)];
-    console.log(LAND.attributes.name);
-    getCoords(LAND.attributes);
-  })
+  function getCountry() {
+    fetch("http://localhost:3000/api/v1/countries")
+    .then(resp => resp.json())
+    .then(json => {
+      LAND = json.data[Math.floor(Math.random() * json.data.length)];
+      console.log(LAND.attributes.name);
+      getCoords(LAND.attributes);
+    })
+  }
+
+  getCountry();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const streetViewDiv = document.getElementById("street-view")
   const playerNameForm = document.getElementById("player-name-form")
   const playerNameInput = document.getElementById("player-name-input")
-  const userInfoPanel = document.getElementById("user-info")
+  const userInfoPanel = document.getElementById("left-panel")
   const userStatsPanel = document.getElementById("user-stats")
 
   let numClicks = 0
@@ -63,23 +69,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentPlayer
 
-  playerNameForm.addEventListener("submit", (event) => {
-    event.preventDefault()
-    playerNameSubmission = playerNameInput.value
+  playerNameForm.addEventListener("submit", event => {
+    event.preventDefault();
+    playerNameSubmission = playerNameInput.value;
+    // document.getElementById('street-view').style = "";
+    $('#concealer').fadeOut('slow');
+    createNewPlayer(playerNameSubmission);
+    $('#temp').fadeOut('slow');
 
-    createNewPlayer(playerNameSubmission)
-
-  // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
-    // verify streetViewable (), determine country
-    // *depending on country determination: fetch country data -> place age in age group in country"s mortality distribution
-  // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
-
-  // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
-      // use .then to change display streetview to show
-  // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
-
-    event.target.reset()
+      userInfoPanel.innerHTML = `<ul><li>name: ${playerNameSubmission}</li><li>steps taken: ${numClicks}</li><li>moves left: ${clickLimit-numClicks}</li></ul>`;
   })// end of form event listener
+
+
 
 // MAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAYMAY
   let mouseWasDragged = false
@@ -101,11 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function createNewPlayer(playerNameSubmission){
     const randPlayerAge = randomPlayerAge()
     const randPlayerGender = randomPlayerGender()
-    const userStatsPTag = document.createElement("p")
-
-    userStatsPTag.innerText = `Welcome ${playerNameSubmission}! You are a ${randPlayerGender} who is ${randPlayerAge} years old and is currently at latitude ${randLatitude} and longitude ${randLongitude}!`
-
-    userStatsPanel.appendChild(userStatsPTag)
     fetch("http://localhost:3000/api/v1/players", {
       method: "POST",
       headers: {
@@ -116,14 +112,16 @@ document.addEventListener("DOMContentLoaded", () => {
         name: playerNameSubmission,
         age: randPlayerAge,
         gender: randPlayerGender,
-        latitude: randLatitude,
-        longitude: randLongitude
+        latitude: COORDS["lat"],
+        longitude: COORDS["lng"]
       })
     })
     .then(response => response.json())
-    .then( (currentPlayerRes) => {
+    .then(currentPlayerRes => {
       currentPlayer = currentPlayerRes["data"]
     })
+
+
   }// end of create new player function
 
   function movementLogic() {
@@ -139,14 +137,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function clicksUnderLimitFn(){
     numClicks++
+    userInfoPanel.innerHTML = `<ul><li>name: ${playerNameSubmission}</li><li>steps taken: ${numClicks}</li><li>moves left: ${clickLimit-numClicks}</li></ul>`;
 
-    userInfoPanel.innerHTML = ""
-    const userInfoPTag = document.createElement("p")
-    userInfoPTag.innerText = `Hello ${playerNameSubmission}, you have moved ${numClicks} times and have ${clickLimit-numClicks} moves left!`
-    userInfoPanel.appendChild(userInfoPTag)
+    // userInfoPanel.innerHTML = ""
+    // const userInfoPTag = document.createElement("p")
+    // userInfoPTag.innerText = `name: ${playerNameSubmission}: ${numClicks} times and have ${clickLimit-numClicks} moves left!`
+    // userInfoPanel.appendChild(userInfoPTag)
 
   }
-
 
   function gameOverFn() {
     let lastUserData
