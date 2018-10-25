@@ -7,7 +7,7 @@ html, body {
 }
 
 * {
-  font-family: 'Slabo 27px', serif;
+  font-family: 'Crimson Text', serif;
 }
 
 
@@ -35,7 +35,20 @@ img {
 
 #title {
   margin: auto;
-  font-size: 2em;
+  letter-spacing: 0.15em;
+  font-size: 3em;
+  opacity: 0.3;
+  -webkit-animation: myfirst 25s;
+  animation: myfirst 25s infinite;
+  margin-top: 80px;
+}
+
+@keyframes myfirst {
+  0%   {color:red}
+  25%  {color:yellow}
+  50%  {color:blue}
+  75%  {color:green}
+  100% {color:red}
 }
 
 #name-prompt {
@@ -66,22 +79,190 @@ img {
   background: #eee;
   position: absolute;
   top: 180px;
-  width: 304px;
+  width: 16%;
   height: 500px;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-left: 2%;
   word-wrap: break-word;
   list-style: none;
 }
-
 
 #right-panel {
   background: #eee;
   position: absolute;
   top: 180px;
-  width: 304px;
+  width: 16%;
   height: 500px;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-right: 2%;
   right: 0;
+}
+
+.gm-iv-address-description {
+  width: 130px;
+}
+
+#concealer {
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* preloader */
+.lds-roller {
+  /* display: inline-block; */
+  width: 64px;
+  height: 64px;
+  /* margin-left: auto;
+  margin-right: auto; */
+  padding-top: 150px;
+}
+.lds-roller div {
+  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  transform-origin: 32px 32px;
+}
+.lds-roller div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #b6b6b6;
+  margin: -3px 0 0 -3px;
+}
+.lds-roller div:nth-child(1) {
+  animation-delay: -0.036s;
+}
+.lds-roller div:nth-child(1):after {
+  top: 50px;
+  left: 50px;
+}
+.lds-roller div:nth-child(2) {
+  animation-delay: -0.072s;
+}
+.lds-roller div:nth-child(2):after {
+  top: 54px;
+  left: 45px;
+}
+.lds-roller div:nth-child(3) {
+  animation-delay: -0.108s;
+}
+.lds-roller div:nth-child(3):after {
+  top: 57px;
+  left: 39px;
+}
+.lds-roller div:nth-child(4) {
+  animation-delay: -0.144s;
+}
+.lds-roller div:nth-child(4):after {
+  top: 58px;
+  left: 32px;
+}
+.lds-roller div:nth-child(5) {
+  animation-delay: -0.18s;
+}
+.lds-roller div:nth-child(5):after {
+  top: 57px;
+  left: 25px;
+}
+.lds-roller div:nth-child(6) {
+  animation-delay: -0.216s;
+}
+.lds-roller div:nth-child(6):after {
+  top: 54px;
+  left: 19px;
+}
+.lds-roller div:nth-child(7) {
+  animation-delay: -0.252s;
+}
+.lds-roller div:nth-child(7):after {
+  top: 50px;
+  left: 14px;
+}
+.lds-roller div:nth-child(8) {
+  animation-delay: -0.288s;
+}
+.lds-roller div:nth-child(8):after {
+  top: 45px;
+  left: 10px;
+}
+@keyframes lds-roller {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+input[type=text] {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #b6b6b6;
+  width: 200px;
+  font-size: 2em;
+  -webkit-transition: width .35s ease-in-out;
+  transition: width .35s ease-in-out;
+  text-align: center;
+}
+
+input[type=text]:focus {
+  /* background: transparent; */
+  border: none;
+  outline: none;
+  border-bottom: 1px solid #b6b6b6;
+  width: 500px;
+  font-size: 2em;
+}
+
+input[type=submit] {
+  height: 4em;
+  width: 4em;
+  margin: 10px;
+  border: none;
+  background: none;
+  font-size: 2em;
+}
+
+#concealer > div {
+  text-align: center;
+  margin: auto;
+  padding-top: 100px;
+}
+
+#loading {
+  font-size: 1.2em;
+  letter-spacing: 0.1em;
+  color: #b6b6b6;
+  animation-duration: 3s;
+  animation-delay: 2s;
+  animation-iteration-count: infinite;
+}
+/* .text-glow-white {
+  color: white;
+  font-size: 15pt;
+  cursor: default;
+  text-shadow: 0px 0px 7px #000;
+} */
+.typewriter {
+  overflow: hidden; /* Ensures the content is not revealed until the animation */
+  border-right: .15em solid #b6b6b6; /* The typwriter cursor */
+  white-space: nowrap; /* Keeps the content on a single line */
+  margin: 0 auto; /* Gives that scrolling effect as the typing happens */
+  letter-spacing: .10em; /* Adjust as needed */
+  animation:
+    typing 3.5s steps(30, end),
+    blink-caret .75s step-end infinite;
+}
+
+/* The typing effect */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+/* The typewriter cursor effect */
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: orange; }
 }
