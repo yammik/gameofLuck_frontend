@@ -30,3 +30,6 @@ W1024
 
 #possible features
 - randomly generated starbucks in high income countries for bonus steps
+
+
+`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${DESTINATION}&inputtype=textquery&fields=name&locationbias=circle:50@${CURRENTPOS.lat},${CURRENTPOS.lng}&key=${AIzaSyB_yMFLGXez8NFy6V2LUVe3Fk3lldgvkHI}`
