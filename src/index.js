@@ -83,13 +83,15 @@ function init() {
     if (status === "OK") {
       console.log("ready");
       attempts = 0;
-      COORDS = data.l[Object.keys(data.l)[Object.keys(data.l).length - 1]];
+      // COORDS = data.l[Object.keys(data.l)[Object.keys(data.l).length - 1]];
+      COORDS = {lat: 40.771807, lng: -73.946945}
       panorama = new google.maps.StreetViewPanorama(document.getElementById("street-view"), {
         position: COORDS,
         pov: {heading: 90, pitch: 0},
         zoom: 1,
         visible: true,
-        disableDefaultUI: true
+        disableDefaultUI: true,
+        showRoadLabels: false
       });
 
       function movementLogic() {
@@ -140,20 +142,37 @@ function init() {
         console.log(NUMCLICKS);
         NUMCLICKS += 1;
         if (NUMCLICKS > 0) {
-          CURRENTPOS = panorama.getPosition() + '';
-          console.log(CURRENTPOS); // use the new coordinate to search for safe zone nearby
+          CURRENTPOS = { lat: panorama.getPosition().lat(), lng: panorama.getPosition().lng() };
+          console.log(CURRENTPOS);
           DESTINATION = 'public restroom';
 
-          fetch(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${DESTINATION.replace(' ', '%20')}&inputtype=textquery&fields=name&locationbias=circle:50@${CURRENTPOS.lat},${CURRENTPOS.lng}&key=AIzaSyB_yMFLGXez8NFy6V2LUVe3Fk3lldgvkHI`)
-            .then(resp => resp.json())
-            .then(placeSearchResultJSON => {
-              // if (placeSearchResultJSON.status === "OK") {
-              //   (function youWon() => {
-                  document.getElementById('map-canvas').innerHTML = `<div>you made it!</div>`;
-                // })();
-              // }
-            })
-          clicksUnderLimitFn();
+
+          var map;
+          var infowindow;
+
+        (function initMap() {
+          let m = document.createElement('div');
+          m.style = "display: none";
+          m.id = "map";
+          document.getElementById('street-view').appendChild(m);
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: CURRENTPOS,
+            zoom: 15
+          });
+
+          infowindow = new google.maps.InfoWindow();
+          var service = new google.maps.places.PlacesService(map);
+          service.nearbySearch({
+            location: CURRENTPOS,
+            radius: 100,
+            type: ['museum']
+          }, function(results, status) {
+            if (status !== 'OK') return;
+            debugger
+          });
+        })()
+
+        clicksUnderLimitFn();
         }
         movementLogic();
       });
@@ -165,9 +184,9 @@ function init() {
       if (attempts > 50) {
         getCountry();
       } else {
-        console.error("Street View data not found for this location.");
+        // console.error("Street View data not found for this location.");
         attempts++;
-        console.log(attempts);
+        // console.log(attempts);
         getCoords(LAND.attributes);
       }
     }
@@ -284,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
       fetch(url)
         .then(resp => resp.json())
         .then(lifeExpJSON => {
-          CLICKLIMIT = Math.ceil(lifeExpJSON.remaining_life_expectancy);
+          CLICKLIMIT = Math.ceil(lifeExpJSON.remaining_life_expectancy) * 5;
           document.getElementById('moves-left').innerText = `moves left: ${CLICKLIMIT-NUMCLICKS}`;
         })
 

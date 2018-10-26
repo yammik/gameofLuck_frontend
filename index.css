@@ -309,4 +309,5 @@ input[type=submit] {
 
 li {
   list-style: none;
+  margin-bottom: 10px;
 }
