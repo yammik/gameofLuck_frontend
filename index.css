@@ -22,11 +22,6 @@ img {
   display: flex;
   align-items: center;
 }
-/*
-.gm-style {
-  width: 10%;
-  height: 10%
-} */
 
 .container {
   display: flex;
@@ -41,7 +36,7 @@ img {
   opacity: 0.3;
   -webkit-animation: myfirst 25s;
   animation: myfirst 25s infinite;
-  margin-top: 80px;
+  margin-top: 70px;
 }
 
 @keyframes myfirst {
@@ -68,8 +63,8 @@ img {
 }
 
 #street-view {
-  width: 60%;
-  height: 500px;
+  width: 100%;
+  height: 540px;
   position: absolute;
   left: 0;
   right: 0;
@@ -77,24 +72,23 @@ img {
 }
 
 #left-panel {
-  background: #eee;
   position: absolute;
-  top: 180px;
-  width: 16%;
-  height: 500px;
-  margin-left: 2%;
-  word-wrap: break-word;
+  top: 140px;
+  width: 50%;
+  height: 30px;
   list-style: none;
+  padding: 0 60px 0 60px;
 }
 
 #right-panel {
-  background: #eee;
   position: absolute;
-  top: 180px;
-  width: 16%;
-  height: 500px;
-  margin-right: 2%;
+  top: 140px;
+  width: 50%;
+  height: 30px;
   right: 0;
+  list-style: none;
+  padding: 0 60px 0 60px;
+  text-align: right;
 }
 
 .gm-iv-address-description {
@@ -114,7 +108,7 @@ img {
   height: 64px;
   /* margin-left: auto;
   margin-right: auto; */
-  padding-top: 150px;
+  padding-top: 300px;
 }
 .lds-roller div {
   animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
@@ -186,6 +180,7 @@ img {
   top: 45px;
   left: 10px;
 }
+
 @keyframes lds-roller {
   0% {
     transform: rotate(0deg);
@@ -228,7 +223,7 @@ input[type=submit] {
 #concealer > div {
   text-align: center;
   margin: auto;
-  padding-top: 100px;
+  padding-top: 60px;
 }
 
 #loading {
@@ -239,12 +234,7 @@ input[type=submit] {
   animation-delay: 2s;
   animation-iteration-count: infinite;
 }
-/* .text-glow-white {
-  color: white;
-  font-size: 15pt;
-  cursor: default;
-  text-shadow: 0px 0px 7px #000;
-} */
+
 .typewriter {
   overflow: hidden; /* Ensures the content is not revealed until the animation */
   border-right: .15em solid #b6b6b6; /* The typwriter cursor */
@@ -292,6 +282,14 @@ input[type=submit] {
   animation-duration: 6s;
 }
 
+.welcome-text-fourth {
+  opacity: 0;
+  color: #b6b6b6;
+  animation-name: fadeInOut;
+  animation-delay: 4s;
+  animation-duration: 6s;
+}
+
 @keyframes fadeInOut {
   0% {
     opacity: 0;
@@ -309,5 +307,10 @@ input[type=submit] {
 
 li {
   list-style: none;
-  margin-bottom: 10px;
+}
+
+ul {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
 }

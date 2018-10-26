@@ -4,6 +4,101 @@ let NUMCLICKS = -1;
 let CURRENTPOS;
 let CLICKLIMIT = 1;
 
+DESTINATIONS = `accounting
+airport
+amusement_park
+aquarium
+art_gallery
+atm
+bakery
+bank
+bar
+beauty_salon
+bicycle_store
+book_store
+bowling_alley
+bus_station
+cafe
+campground
+car_dealer
+car_rental
+car_repair
+car_wash
+casino
+cemetery
+church
+city_hall
+clothing_store
+convenience_store
+courthouse
+dentist
+department_store
+doctor
+electrician
+electronics_store
+embassy
+fire_station
+florist
+funeral_home
+furniture_store
+gas_station
+gym
+hair_care
+hardware_store
+hindu_temple
+home_goods_store
+hospital
+insurance_agency
+jewelry_store
+laundry
+lawyer
+library
+liquor_store
+local_government_office
+locksmith
+lodging
+meal_delivery
+meal_takeaway
+mosque
+movie_rental
+movie_theater
+moving_company
+museum
+night_club
+painter
+park
+parking
+pet_store
+pharmacy
+physiotherapist
+plumber
+police
+post_office
+real_estate_agency
+restaurant
+roofing_contractor
+rv_park
+school
+shoe_store
+shopping_mall
+spa
+stadium
+storage
+store
+subway_station
+supermarket
+synagogue
+taxi_stand
+train_station
+transit_station
+travel_agency
+veterinary_care
+zoo`.split('\n');
+
+DESTINATION = DESTINATIONS[Math.floor(Math.random()*DESTINATIONS.length)];
+
+// Math.ceil(Math.random() * 75)
+
 var TxtType = function(el, toRotate, period) {
   this.toRotate = toRotate;
   this.el = el;
@@ -84,7 +179,7 @@ function init() {
       console.log("ready");
       attempts = 0;
       // COORDS = data.l[Object.keys(data.l)[Object.keys(data.l).length - 1]];
-      COORDS = {lat: 40.771807, lng: -73.946945}
+      COORDS = {lat: 40.77355807282662, lng: -73.95148553085232}
       panorama = new google.maps.StreetViewPanorama(document.getElementById("street-view"), {
         position: COORDS,
         pov: {heading: 90, pitch: 0},
@@ -125,6 +220,25 @@ function init() {
         const currentPlayerId = CURRENTPLAYER.id
         console.log(CURRENTPLAYER);
         console.log(currentPlayerId);
+
+      } // end of game over fn
+
+      function youWin(dest) {
+        document.getElementById('title').innerText = 'wanderFOUND';
+        document.getElementById('title').style += '-webkit-transform: translate(0px, 5px);';
+        document.getElementById('left-panel').innerText = `you made it to ${dest.name}, at ${dest.vicinity}!`;
+        document.getElementById('right-panel').innerText = 'feel free to explore more ;)';
+        $("#left-panel").fadeOut(0, function() {
+           setTimeout(function () {
+               $("#left-panel").fadeIn(1000);
+           }, 0);
+        });
+        $("#right-panel").fadeOut(0, function() {
+           setTimeout(function () {
+               $("#right-panel").fadeIn(1000);
+           }, 0);
+        });
+
         fetch(`http://localhost:3000/api/v1/players/${currentPlayerId}`, {
           method: "PATCH",
           headers: {
@@ -132,11 +246,12 @@ function init() {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            alive: false
+            alive: true,
+            latitude: CURRENTPOS.lat,
+            longitude: CURRENTPOS.lng
           })
         })
-
-      } // end of game over fn
+      }
 
       panorama.addListener('position_changed', function() {
         console.log(NUMCLICKS);
@@ -144,8 +259,19 @@ function init() {
         if (NUMCLICKS > 0) {
           CURRENTPOS = { lat: panorama.getPosition().lat(), lng: panorama.getPosition().lng() };
           console.log(CURRENTPOS);
-          DESTINATION = 'public restroom';
 
+          fetch("http://localhost:3000/api/v1/steps", {
+            method: "POST",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              latitude: CURRENTPOS.lat,
+              longitude: CURRENTPOS.lng,
+              no_clicks: NUMCLICKS,
+            })
+          })
 
           var map;
           var infowindow;
@@ -166,9 +292,15 @@ function init() {
             location: CURRENTPOS,
             radius: 100,
             type: ['museum']
+            // type: DESTINATION
           }, function(results, status) {
             if (status !== 'OK') return;
-            debugger
+            // debugger
+            let icon = document.createElement('img');
+            icon.src = results[0].icon;
+            icon.style = "width: 20px; height: 20px;"
+            document.getElementById('right-panel').appendChild(icon);
+            youWin(results[0]);
           });
         })()
 
@@ -209,31 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const playerNameForm = document.getElementById("player-name-form")
   const playerNameInput = document.getElementById("player-name-input")
 
-  // $('#loading')[0].innerText.split('').forEach(l => console.log(l))
-  $('#loading')[0].innerText.split('').forEach(el => setTimeout(function(animationName, callback) {
-    var animationEnd = (function(el) {
-      var animations = {
-        animation: 'animationend',
-        OAnimation: 'oAnimationEnd',
-        MozAnimation: 'mozAnimationEnd',
-        WebkitAnimation: 'webkitAnimationEnd',
-      };
 
-      for (var t in animations) {
-        if (el.style[t] !== undefined) {
-          return animations[t];
-        }
-      }
-    })(document.createElement('div'));
-
-    this.addClass('animated ' + animationName).one(animationEnd, function() {
-      $(this).removeClass('animated ' + animationName);
-
-      if (typeof callback === 'function') callback();
-    });
-
-    return this;
-  }, Math.random()*2000, 'slideInLeft'));
 
   $('#title')[0].addEventListener('click', e => {
     window.location.reload();
@@ -246,35 +354,13 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
     playerNameSubmission = playerNameInput.value;
     $('#temp').fadeOut(3000);
+
     createNewPlayer(playerNameSubmission);
-    welcomeName = document.createElement('div');
-    welcomeName.className += 'welcome-text-first';
-    welcomeName.innerText = `welcome, ${playerNameSubmission}...`;
-    document.getElementById('concealer').appendChild(welcomeName);
 
-    welcomeAgeAndGender = document.createElement('div');
-    welcomeAgeAndGender.className += 'welcome-text-second';
-    welcomeAgeAndGender.innerText = `you are a ${PLAYERAGE}-year old ${PLAYERGENDER === "male" ? "man" : "woman" } in the faraway country of ${LAND.attributes.name} ...`;
-    document.getElementById('concealer').appendChild(welcomeAgeAndGender)
-
-    welcomeFinish = document.createElement('div');
-    welcomeFinish.className += 'welcome-text-third';
-    welcomeFinish.innerText = `your mission is to find DESSTINATEIONNN within ${CLICKLIMIT} moves`;
-    document.getElementById('concealer').appendChild(welcomeFinish)
-
-
-    $("#concealer").fadeIn(0, function() {
-       setTimeout(function () {
-           $("#concealer").fadeOut(3000);
-       }, 10000);
-   });
-
-   document.getElementById('left-panel').innerHTML = `<ul><li>name: ${playerNameSubmission}</li><li id="steps-taken">steps taken: ${NUMCLICKS}</li><li id="moves-left">moves left: ${CLICKLIMIT-NUMCLICKS}</li></ul>`;
 
   })// end of form event listener
 
   document.addEventListener('click', e => {
-    console.log('asdfas')
     document.getElementById('steps-taken').innerText = `steps taken: ${NUMCLICKS}`;
     document.getElementById('moves-left').innerText = `moves left: ${CLICKLIMIT-NUMCLICKS}`;
   })
@@ -282,6 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function createNewPlayer(playerNameSubmission){
     PLAYERAGE = randomPlayerAge()
     PLAYERGENDER = randomPlayerGender()
+    debugger
     fetch("http://localhost:3000/api/v1/players", {
       method: "POST",
       headers: {
@@ -292,19 +379,67 @@ document.addEventListener("DOMContentLoaded", () => {
         name: playerNameSubmission,
         age: PLAYERAGE,
         gender: PLAYERGENDER,
-        latitude: COORDS["lat"],
-        longitude: COORDS["lng"]
+        latitude: COORDS.lat,
+        longitude: COORDS.lng
       })
     })
     .then(response => response.json())
     .then(playerJSON => {
       CURRENTPLAYER = playerJSON["data"];
-      let url = `http://api.population.io:80/1.0/life-expectancy/remaining/${playerJSON.data.attributes.gender}/${LAND.attributes.name.replace(' ', '%20')}/2001-05-11/${playerJSON.data.attributes.age}y0m/`;
+      let url = `http://api.population.io:80/1.0/life-expectancy/remaining/${playerJSON.data.attributes.gender}/${LAND.attributes.name.replace(/ /g, '%20')}/2001-05-11/${playerJSON.data.attributes.age}y0m/`;
       fetch(url)
         .then(resp => resp.json())
         .then(lifeExpJSON => {
           CLICKLIMIT = Math.ceil(lifeExpJSON.remaining_life_expectancy) * 5;
-          document.getElementById('moves-left').innerText = `moves left: ${CLICKLIMIT-NUMCLICKS}`;
+          document.getElementById('moves-left').innerText = `moves left: ${CLICKLIMIT - NUMCLICKS}`;
+          document.getElementById('goal').innerText = `you are looking for a ${DESTINATION.replace(/_/g, ' ')}`;
+          welcomeName = document.createElement('div');
+          welcomeName.className += 'welcome-text-first';
+          welcomeName.innerText = `welcome, ${playerNameSubmission}...`;
+          document.getElementById('concealer').appendChild(welcomeName);
+
+          welcomeAgeAndGender = document.createElement('div');
+          welcomeAgeAndGender.className += 'welcome-text-second';
+          welcomeAgeAndGender.innerText = `you are a ${PLAYERAGE}-year old ${PLAYERGENDER === "male" ? "man" : "woman" } in the faraway country of ${LAND.attributes.name} ...`;
+          document.getElementById('concealer').appendChild(welcomeAgeAndGender);
+
+          welcomeFinish = document.createElement('div');
+          welcomeFinish.className += 'welcome-text-third';
+          welcomeFinish.innerText = `your mission is to find a ${DESTINATION.replace(/_/g, ' ')} within ${CLICKLIMIT} move${CLICKLIMIT > 1 ? 's' : ''}.`;
+          document.getElementById('concealer').appendChild(welcomeFinish);
+
+          welcomeFinish2 = document.createElement('div');
+          welcomeFinish2.className += 'welcome-text-fourth';
+          welcomeFinish2.innerText = `good luck, have fun!`;
+          document.getElementById('concealer').appendChild(welcomeFinish2);
+
+          $("#concealer").fadeIn(0, function() {
+             setTimeout(function () {
+                 $("#concealer").fadeOut(3000);
+             }, 10000);
+          });
+          $("#display-name").fadeOut(0, function() {
+             setTimeout(function () {
+                 $("#display-name").fadeIn(3000);
+             }, 8000);
+          });
+          $("#steps-taken").fadeOut(0, function() {
+             setTimeout(function () {
+                 $("#steps-taken").fadeIn(3000);
+             }, 9000);
+          });
+          $("#moves-left").fadeOut(0, function() {
+             setTimeout(function () {
+                 $("#moves-left").fadeIn(3000);
+             }, 10000);
+          });
+          $("#goal").fadeOut(0, function() {
+             setTimeout(function () {
+                 $("#goal").fadeIn(3000);
+             }, 10000);
+          });
+
+         document.getElementById('left-panel').innerHTML = `<ul><li id="display-name" style="display: none">name: ${playerNameSubmission}</li><li id="steps-taken" style="display: none">steps taken: ${NUMCLICKS}</li><li id="moves-left" style="display: none">moves left: ${CLICKLIMIT-NUMCLICKS}</li></ul>`;
         })
 
     })
