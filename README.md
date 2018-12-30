@@ -8,7 +8,7 @@ This game is for __those who have an itch to see the world, but have no time or 
 If you are one of these things : 
  - [x] University student who does not have a rich mom and/or dad
  - [x] Bootcamp student
- - [x] Grad student in the STEM field
+ - [x] Grad student in the STEM field<br />
 this is for you. I made it for you. Because I was all of these. Hang in there, you'll make it. I'm with you.<br /><br />
 
 Also might be for you if you have time _and_ money, but just...don't feel like getting out. In which case, please re-evaluate your lifestyle.
