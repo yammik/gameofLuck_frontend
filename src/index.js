@@ -369,7 +369,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(response => response.json())
     .then(playerJSON => {
       CURRENTPLAYER = playerJSON["data"];
-      // having issues with Mixed content blocked.
+      // having issues with Mixed content blocked. The API call will work, but not on the hosted Github Page. It will not work without line 5 in ../index.html.
       let url = `http://api.population.io:80/1.0/life-expectancy/remaining/${playerJSON.data.attributes.gender}/${LAND.attributes.name.replace(/ /g, '%20')}/2001-05-11/${playerJSON.data.attributes.age}y0m/`;
       fetch(url)
         .then(resp => resp.json())
