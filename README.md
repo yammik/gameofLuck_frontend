@@ -1,4 +1,4 @@
-###### Wanderlost
+# Wanderlost
 
 ### What it be
 Wanderlost is an exploration game on Google Maps Streetview. 
