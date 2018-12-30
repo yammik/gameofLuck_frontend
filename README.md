@@ -11,7 +11,6 @@ If you are one of these things :
  - Bootcamp student
  - Grad student in the STEM field
 <a/><br />
-[//]: # (PLS)
 Then this is for you. I made it for you. Because I was all of these. Hang in there, you'll make it. I'm with you.<br /><br />
 
 Also might be for you if you have time _and_ money, but just...don't feel like getting out. ~~In which case, please re-evaluate your lifestyle.~~
