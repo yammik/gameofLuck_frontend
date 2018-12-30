@@ -30,3 +30,7 @@ Oh, and if you're unlucky, you might end up **inside** a shop or someone's backy
 
 ##### Step 3
 Once the Streetview loads, just click around to explore as you normally would. Or you can use directional keys to navigate as well, but that is not recommended as you can't travel as far in one step that way.
+
+
+### Gotchas
+Google Places is mostly user-reported and specified data. What this means for our app is that a 65-year old work-at-home mom living in the middle of a cornfield can declare her home address a painter's studio, and that would count as a destination for the game if you were looking for a painter. We were not anticipating this issue, but we think this makes the game more fun. In a weird way. People are weird.
