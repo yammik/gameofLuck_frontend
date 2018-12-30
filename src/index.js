@@ -4,7 +4,7 @@ let LAND;
 let NUMCLICKS = -1;
 let CURRENTPOS;
 let CLICKLIMIT = 1;
-GOALS = `accounting
+GOALS = `accountant
 airport
 amusement_park
 aquarium
@@ -279,13 +279,14 @@ function init() {
           }, function(results, status) {
             if (status !== 'OK') return;
             // even if results does not include the type of place you're looking for, it'll say OK
-            // need to check results[0].types
-            if (results[0].types.includes(GOAL.replace(/_/g, ' '))) {
+            // need to check types of each result
+            const areWeThereYet = results.filter(result => result.types.includes(GOAL));
+            if (areWeThereYet.length > 0) {
               let icon = document.createElement('img');
-              icon.src = results[0].icon;
+              icon.src = areWeThereYet[0].icon;
               icon.style = "width: 20px; height: 20px;"
               document.getElementById('right-panel').appendChild(icon);
-              youWin(results[0]); // results[0] being the first location of the places search results
+              youWin(areWeThereYet[0]); // results[0] being the first location of the places search results
             }
           });
         })()
@@ -350,7 +351,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function createNewPlayer(playerNameSubmission){
     PLAYERAGE = randomPlayerAge()
-    // PLAYERAGE = 99;
     PLAYERGENDER = randomPlayerGender()
     fetch("http://localhost:3000/api/v1/players", {
       method: "POST",
@@ -376,7 +376,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(lifeExpJSON => {
           CLICKLIMIT = Math.ceil(lifeExpJSON.remaining_life_expectancy) * 5;
           document.getElementById('moves-left').innerText = `moves left: ${CLICKLIMIT - NUMCLICKS}`;
-          document.getElementById('goal').innerText = `you are looking for a ${GOAL.replace(/_/g, ' ')}`;
+          // need to be 'an' if first letter of the goal is a vowel
+          document.getElementById('goal').innerText = `you are looking for ${['a', 'e', 'i', 'o', 'u'].includes(GOAL[0]) ? 'an' : 'a'} ${GOAL.replace(/_/g, ' ')}`;
           welcomeName = document.createElement('div');
           welcomeName.className += 'welcome-text-first';
           welcomeName.innerText = `welcome, ${playerNameSubmission}...`;
@@ -392,6 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
           welcomeFinish.innerText = `your mission is to find a ${GOAL.replace(/_/g, ' ')} within ${CLICKLIMIT} move${CLICKLIMIT > 1 ? 's' : ''}.`;
           document.getElementById('concealer').appendChild(welcomeFinish);
 
+          // clearly ran out of names
           welcomeFinish2 = document.createElement('div');
           welcomeFinish2.className += 'welcome-text-fourth';
           welcomeFinish2.innerText = `good luck, have fun!`;
