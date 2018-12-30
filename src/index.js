@@ -1,10 +1,10 @@
+// import Destinations from '../Goals.js'
 let COORDS;
 let LAND;
 let NUMCLICKS = -1;
 let CURRENTPOS;
 let CLICKLIMIT = 1;
-
-DESTINATIONS = `accounting
+GOALS = `accounting
 airport
 amusement_park
 aquarium
@@ -95,10 +95,13 @@ travel_agency
 veterinary_care
 zoo`.split('\n');
 
-DESTINATION = DESTINATIONS[Math.floor(Math.random()*DESTINATIONS.length)];
+// randomly determine a goal place for player
+GOAL = GOALS[Math.floor(Math.random()*GOALS.length)];
 
-// Math.ceil(Math.random() * 75)
 
+// begin typewrite animation for loading screen
+// these are for loading screen text animation
+// texts appear and disappear letter by letter at varying speed
 var TxtType = function(el, toRotate, period) {
   this.toRotate = toRotate;
   this.el = el;
@@ -108,7 +111,6 @@ var TxtType = function(el, toRotate, period) {
   this.tick();
   this.isDeleting = false;
 };
-
 TxtType.prototype.tick = function() {
   var i = this.loopNum % this.toRotate.length;
   var fullTxt = this.toRotate[i];
@@ -140,6 +142,7 @@ TxtType.prototype.tick = function() {
   }, delta);
 };
 
+// adds the animation to elements that have the class 'typewrite'
 window.onload = function() {
   var elements = document.getElementsByClassName('typewrite');
   for (var i=0; i<elements.length; i++) {
@@ -154,8 +157,9 @@ window.onload = function() {
   css.type = "text/css";
   css.innerHTML = ".typewrite > .wrap { border-right: 0.08em solid #fff}";
   document.body.appendChild(css);
-};
+}; // end typewrite animation for loading screen
 
+// this initializes street view map
 function init() {
   let attempts = 0;
   let panorama;
@@ -168,9 +172,11 @@ function init() {
     return (Math.random()*(latMax-latMin)) + latMin;
   }
 
+  // generates random coordinate within the given country's bounds
   function getCoords(country) {
     const sv = new google.maps.StreetViewService();
     let coordinates = {lat: generateRandomLat(country.bounds["lat-min"], country.bounds["lat-max"]), lng: generateRandomLong(country.bounds["lon-min"], country.bounds["lon-max"])};
+    // not all coordinates have Streetview data available. fn processSVData handles the response from Google Maps to determine availability of SV data.
     sv.getPanorama({location: coordinates, radius: 50}, processSVData);
   }
 
@@ -178,8 +184,7 @@ function init() {
     if (status === "OK") {
       console.log("ready");
       attempts = 0;
-      // COORDS = data.l[Object.keys(data.l)[Object.keys(data.l).length - 1]];
-      COORDS = {lat: 40.77355807282662, lng: -73.95148553085232}
+      COORDS = data.l[Object.keys(data.l)[Object.keys(data.l).length - 1]];
       panorama = new google.maps.StreetViewPanorama(document.getElementById("street-view"), {
         position: COORDS,
         pov: {heading: 90, pitch: 0},
@@ -190,14 +195,13 @@ function init() {
       });
 
       function movementLogic() {
-        if(NUMCLICKS < CLICKLIMIT){
+        if (NUMCLICKS < CLICKLIMIT) {
           clicksUnderLimitFn()
         }
         else {
           gameOverFn()
-          // break the game
         }
-      }// end of movement logic
+      } // end of movement logic
 
       function clicksUnderLimitFn() {
         document.getElementById('steps-taken').innerText = `steps taken: ${NUMCLICKS}`;
@@ -205,21 +209,17 @@ function init() {
       }
 
       function gameOverFn() {
-        let lastUserData;
-        let allUserData;
         document.getElementById('left-panel').innerHTML = ""
+        // send the player a cheeky game over message
         const gaveOverMessage = document.createElement("div")
         gaveOverMessage.innerText = "gg no re";
         document.getElementById('left-panel').appendChild(gaveOverMessage)
         document.getElementById('street-view').innerHTML = ""
+        // when game is over, Streetview is covered with a picture Sean likes. Feels irreverent to use this picture in a game like this but sure why not
         const gameOverImg = document.createElement("img")
         gameOverImg.src = "https://www.moma.org/media/W1siZiIsIjE2NTQ1NyJdLFsicCIsImNvbnZlcnQiLCItcmVzaXplIDIwMDB4MjAwMFx1MDAzZSJdXQ.jpg?sha=33c151dba7f8de4c";
         gameOverImg.style = 'object-fit: cover; width: 100%';
         document.getElementById('street-view').appendChild(gameOverImg)
-
-        const currentPlayerId = CURRENTPLAYER.id
-        console.log(CURRENTPLAYER);
-        console.log(currentPlayerId);
 
       } // end of game over fn
 
@@ -254,30 +254,14 @@ function init() {
       }
 
       panorama.addListener('position_changed', function() {
-        console.log(NUMCLICKS);
         NUMCLICKS += 1;
         if (NUMCLICKS > 0) {
           CURRENTPOS = { lat: panorama.getPosition().lat(), lng: panorama.getPosition().lng() };
-          console.log(CURRENTPOS);
-
-          fetch("http://localhost:3000/api/v1/steps", {
-            method: "POST",
-            headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              latitude: CURRENTPOS.lat,
-              longitude: CURRENTPOS.lng,
-              no_clicks: NUMCLICKS,
-            })
-          })
-
           var map;
           var infowindow;
 
         (function initMap() {
-          let m = document.createElement('div');
+          const m = document.createElement('div');
           m.style = "display: none";
           m.id = "map";
           document.getElementById('street-view').appendChild(m);
@@ -286,21 +270,23 @@ function init() {
             zoom: 15
           });
 
-          infowindow = new google.maps.InfoWindow();
+          // Is the player within 10m of their goal place?
           var service = new google.maps.places.PlacesService(map);
           service.nearbySearch({
             location: CURRENTPOS,
-            radius: 100,
-            type: ['museum']
-            // type: DESTINATION
+            radius: 10,
+            type: GOAL.replace(/_/g, ' ')
           }, function(results, status) {
             if (status !== 'OK') return;
-            // debugger
-            let icon = document.createElement('img');
-            icon.src = results[0].icon;
-            icon.style = "width: 20px; height: 20px;"
-            document.getElementById('right-panel').appendChild(icon);
-            youWin(results[0]);
+            // even if results does not include the type of place you're looking for, it'll say OK
+            // need to check results[0].types
+            if (results[0].types.includes(GOAL.replace(/_/g, ' '))) {
+              let icon = document.createElement('img');
+              icon.src = results[0].icon;
+              icon.style = "width: 20px; height: 20px;"
+              document.getElementById('right-panel').appendChild(icon);
+              youWin(results[0]); // results[0] being the first location of the places search results
+            }
           });
         })()
 
@@ -308,28 +294,29 @@ function init() {
         }
         movementLogic();
       });
+
+      // fade in UIs before game starts
       $('.lds-roller').fadeOut(1000);
       $('#loading').fadeOut(1000);
       $('#name-prompt').fadeIn(3000);
       $('#player-name-form').fadeIn(3000);
     } else {
+      // if it takes too long to find a coordinate within this country, go to a new country
       if (attempts > 50) {
         getCountry();
       } else {
-        // console.error("Street View data not found for this location.");
         attempts++;
-        // console.log(attempts);
         getCoords(LAND.attributes);
       }
     }
   }
 
+  // our API has a list of countries and their bounds
   function getCountry() {
     fetch("http://localhost:3000/api/v1/countries")
     .then(resp => resp.json())
     .then(json => {
       LAND = json.data[Math.floor(Math.random() * json.data.length)];
-      console.log(LAND.attributes.name);
       getCoords(LAND.attributes);
     })
   }
@@ -341,8 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const playerNameForm = document.getElementById("player-name-form")
   const playerNameInput = document.getElementById("player-name-input")
 
-
-
+  // don't like where you ended up? click on logo to go somewhere else
   $('#title')[0].addEventListener('click', e => {
     window.location.reload();
   })
@@ -354,11 +340,8 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
     playerNameSubmission = playerNameInput.value;
     $('#temp').fadeOut(3000);
-
     createNewPlayer(playerNameSubmission);
-
-
-  })// end of form event listener
+  }) // end of form event listener
 
   document.addEventListener('click', e => {
     document.getElementById('steps-taken').innerText = `steps taken: ${NUMCLICKS}`;
@@ -367,8 +350,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function createNewPlayer(playerNameSubmission){
     PLAYERAGE = randomPlayerAge()
+    // PLAYERAGE = 99;
     PLAYERGENDER = randomPlayerGender()
-    debugger
     fetch("http://localhost:3000/api/v1/players", {
       method: "POST",
       headers: {
@@ -392,7 +375,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(lifeExpJSON => {
           CLICKLIMIT = Math.ceil(lifeExpJSON.remaining_life_expectancy) * 5;
           document.getElementById('moves-left').innerText = `moves left: ${CLICKLIMIT - NUMCLICKS}`;
-          document.getElementById('goal').innerText = `you are looking for a ${DESTINATION.replace(/_/g, ' ')}`;
+          document.getElementById('goal').innerText = `you are looking for a ${GOAL.replace(/_/g, ' ')}`;
           welcomeName = document.createElement('div');
           welcomeName.className += 'welcome-text-first';
           welcomeName.innerText = `welcome, ${playerNameSubmission}...`;
@@ -405,7 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           welcomeFinish = document.createElement('div');
           welcomeFinish.className += 'welcome-text-third';
-          welcomeFinish.innerText = `your mission is to find a ${DESTINATION.replace(/_/g, ' ')} within ${CLICKLIMIT} move${CLICKLIMIT > 1 ? 's' : ''}.`;
+          welcomeFinish.innerText = `your mission is to find a ${GOAL.replace(/_/g, ' ')} within ${CLICKLIMIT} move${CLICKLIMIT > 1 ? 's' : ''}.`;
           document.getElementById('concealer').appendChild(welcomeFinish);
 
           welcomeFinish2 = document.createElement('div');
@@ -443,51 +426,15 @@ document.addEventListener("DOMContentLoaded", () => {
         })
 
     })
-  }// end of create new player function
-
-  $.fn.extend({
-  animateCss: function(animationName, callback) {
-    var animationEnd = (function(el) {
-      var animations = {
-        animation: 'animationend',
-        OAnimation: 'oAnimationEnd',
-        MozAnimation: 'mozAnimationEnd',
-        WebkitAnimation: 'webkitAnimationEnd',
-      };
-
-      for (var t in animations) {
-        if (el.style[t] !== undefined) {
-          return animations[t];
-        }
-      }
-    })(document.createElement('div'));
-
-    this.addClass('animated ' + animationName).one(animationEnd, function() {
-      $(this).removeClass('animated ' + animationName);
-
-      if (typeof callback === 'function') callback();
-    });
-
-    return this;
-  },});
-})// end of DOMContentLoaded eventlistener
+  } // end of create new player function
+}) // end of DOMContentLoaded eventlistener
 
 function randomPlayerAge() {
-  randNum = Math.floor(Math.random() * Math.floor(100))
-  if (randNum > 1) {
-    return randNum
-  }
-  else {
-    randNum
-  }
+  randNum = Math.floor(Math.random() * 99);
+  return randNum + 1;
 }
 
 function randomPlayerGender() {
-  randNumber = Math.random() * Math.floor(1)
-  if (randNumber >= 0.5) {
-    return "male"
-  }
-  else {
-    return "female"
-  }
+  return ['male', 'female'][Math.floor(Math.random() * 2)];
 }
+//
