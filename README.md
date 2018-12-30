@@ -17,7 +17,7 @@ Once you're in, you, the player, will be assigned some details like **gender** a
 
 The thing to look out for is your **destination**. This is totally random. Sometimes you get funny ones. When I was testing the app once, I was a 99-year old man named Asdf in Iceland looking for a funeral home. I had 15 steps, and was dropped off in the middle of a mountain. Needless to say, things did not end well for Asdf.<br /><br />
 
-Oh, and if you're unlucky, you might end up **inside** a shop or someone's backyard and not be able to leave that spot. The working title for this app was originally 'Game of Luck'. I'll let you figure out why.
+Oh, and if you're unlucky, you might end up **inside** a shop or someone's backyard and not be able to leave that spot. The working title for this app was originally 'Game of Luck'. I'll let you figure out why.<br /><br />
 
 ##### Step 3
 Once the Streetview loads, just click around to explore as you normally would. Or you can use directional keys to navigate as well, but that is not recommended as you can't travel as far in one step that way.
