@@ -7,6 +7,7 @@ Wanderlost is an exploration game on Google Maps Streetview.
 This game is for __those who have an itch to see the world, but have no time or money to do so__.<br/>
 <br />
 If you are one of these things : 
+<a>
  - University student who does not have a rich mom and/or dad
  - Bootcamp student
  - Grad student in the STEM field
