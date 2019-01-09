@@ -1,4 +1,6 @@
 // import Destinations from '../Goals.js'
+// BASE_URL = "http://localhost:3000";
+BASE_URL = "http://wander-lost.herokuapp.com";
 let COORDS;
 let LAND;
 let NUMCLICKS = -1;
@@ -239,7 +241,7 @@ function init() {
            }, 0);
         });
 
-        fetch(`http://localhost:3000/api/v1/players/${currentPlayerId}`, {
+        fetch(`http://wander-lost.herokuapp.com/api/v1/players/${currentPlayerId}`, {
           method: "PATCH",
           headers: {
             "Accept": "application/json",
@@ -314,7 +316,7 @@ function init() {
 
   // our API has a list of countries and their bounds
   function getCountry() {
-    fetch("http://localhost:3000/api/v1/countries")
+    fetch("http://wander-lost.herokuapp.com/api/v1/countries")
     .then(resp => resp.json())
     .then(json => {
       LAND = json.data[Math.floor(Math.random() * json.data.length)];
@@ -352,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function createNewPlayer(playerNameSubmission){
     PLAYERAGE = randomPlayerAge()
     PLAYERGENDER = randomPlayerGender()
-    fetch("http://localhost:3000/api/v1/players", {
+    fetch("http://wander-lost.herokuapp.com/api/v1/players", {
       method: "POST",
       headers: {
         "Accept": "application/json",
