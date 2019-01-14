@@ -1,5 +1,5 @@
 // import Destinations from '../Goals.js'
-BASE_URL = "http://localhost:3000";
+BASE_URL = "http://wander-lost.herokuapp.com";
 
 let COORDS;
 let LAND;
